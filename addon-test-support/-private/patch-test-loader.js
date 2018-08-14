@@ -1,5 +1,6 @@
 import getUrlParams from './get-url-params';
 import splitTestModules from './split-test-modules';
+import weightedTestModules from './weight-test-modules';
 
 export default function patchTestLoader(TestLoader) {
   TestLoader._urlParams = getUrlParams();
@@ -21,6 +22,7 @@ export default function patchTestLoader(TestLoader) {
   TestLoader.prototype.loadModules = function _emberExamLoadModules() {
     const urlParams = TestLoader._urlParams;
     let partitions = urlParams._partition;
+    let weighted = urlParams._weighted;
     let split = parseInt(urlParams._split, 10);
 
     split = isNaN(split) ? 1 : split;
@@ -36,9 +38,13 @@ export default function patchTestLoader(TestLoader) {
     testLoader._testModules = [];
     _super.loadModules.apply(testLoader, arguments);
 
-    const splitModules = splitTestModules(testLoader._testModules, split, partitions);
+    if (weighted) {
+      testLoader._testModules = weightedTestModules(testLoader._testModules);
+    }
 
-    splitModules.forEach((moduleName) => {
+    testLoader._testModules = splitTestModules(testLoader._testModules, split, partitions);
+
+    testLoader._testModules.forEach((moduleName) => {
       _super.require.call(testLoader, moduleName);
       _super.unsee.call(testLoader, moduleName);
     });
