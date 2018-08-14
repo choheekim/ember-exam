@@ -227,7 +227,7 @@ test('load works with a double-digit single partition', function(assert) {
 
   assert.deepEqual(this.requiredModules, [
     'test-10-test',
-  ]);
+  ]); 
 });
 
 test('load works from sorted order by weight', function(assert) {
