@@ -21,8 +21,8 @@ export default function patchTestLoader(TestLoader) {
 
   TestLoader.prototype.loadModules = function _emberExamLoadModules() {
     const urlParams = TestLoader._urlParams;
+    const weighted = urlParams._weighted;
     let partitions = urlParams._partition;
-    let weighted = urlParams._weighted;
     let split = parseInt(urlParams._split, 10);
 
     split = isNaN(split) ? 1 : split;

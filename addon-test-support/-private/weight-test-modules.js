@@ -10,39 +10,30 @@
  * @param {*} modulePath A file path to a module
  */
 function getWeight(modulePath) {
-    let weight = -1;
-    if (modulePath.includes('/jshint/')) {
-        weight = 1;
-    } else if (modulePath.includes('/unit/')) {
-        weight = 10;
-    } else if (modulePath.includes('/integration/')) {
-        weight = 20;
-    } else if (modulePath.includes('/acceptance/')) {
-        weight = 150;
-    } else {
-        weight = 50;
-    }
-    return weight;
+    const [_,key] = /\/(jshint|unit|integration|acceptance)\//.exec(modulePath) || [];
+    return WEIGHT_MAP[key] || WEIGHT_DEFAULT;
 }
 
+const WEIGHT_MAP = {jshint:1, unit:10, integration:20, acceptance:150};
+const WEIGHT_DEFAULT = 50;
+
 export default function weightTestModules(modules) {
-    let weightedModule = [];
-    let groups = {};
+    const groups = {};
 
     modules.forEach(function(module) {
         const moduleWeight = getWeight(module);
 
-        if (typeof groups[moduleWeight] == 'undefined') {
+        if (!groups[moduleWeight]) {
             groups[moduleWeight] = [];
         }
         groups[moduleWeight].push(module);
     });
 
     // returns a sort list of the weights in descending order
-    const sortedWeights = Object.keys(groups).sort(function(a, b){return b-a});
-    sortedWeights.forEach( function(weight) {
-        const sortedMoudleArr = groups[weight].sort();
-        weightedModule = weightedModule.concat(sortedMoudleArr);
-    });
-    return weightedModule;
+    return Object.keys(groups)
+                .sort(function(a, b){return b-a})
+                .reduce( function(accumulatedArray, weight) {
+                    const sortedMoudleArr = groups[weight].sort();
+                    return accumulatedArray.concat(sortedMoudleArr);
+                }, []);
 }
