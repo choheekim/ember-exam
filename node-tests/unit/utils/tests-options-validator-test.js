@@ -109,12 +109,30 @@ describe('TestOptionsValidator', function() {
       shouldThrow('Parallelize', { parallel: true }, /You must specify the `split` option in order to run your tests in parallel/);
     });
 
+    it('it should throw an error if `parallel` is being used with `load-balance`', function() {
+      shouldThrow('Parallelize', { parallel: true, loadBalance: 1, split:2 }, /You must not use the `load-balance` option with the `parallel` option/);
+    })
+
     it('should return false', function() {
       shouldEqual('Parallelize', { parallel: false }, false);
     });
 
     it('should return true', function() {
       shouldEqual('Parallelize', { split: 2, parallel: true }, true);
+    });
+  });
+
+  describe('shouldLoadBalance', function() {
+    it('should throw an error if `load-balance` contains a value less than 1', function() {
+      shouldThrow('LoadBalance', { loadBalance: -1}, /You must specify a load-balance value greater than or equal to 1/);
+    });
+
+    it('should throw an error if `load-balance` is being used with `parallel', function() {
+      shouldThrow('LoadBalance', { loadBalance: 2, parallel: true}, /You must not use the `parallel` option with the `load-balance` option/);
+    });
+
+    it('should return true', function() {
+      shouldEqual('LoadBalance', { loadBalance: 3 }, true);
     });
   });
 });
