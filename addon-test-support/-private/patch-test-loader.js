@@ -22,6 +22,7 @@ export default function patchTestLoader(TestLoader) {
   TestLoader.prototype.loadModules = function _emberExamLoadModules() {
     const urlParams = TestLoader._urlParams;
     const weighted = urlParams._weighted;
+    let testModules = [];
     let partitions = urlParams._partition;
     let split = parseInt(urlParams._split, 10);
 
@@ -37,14 +38,15 @@ export default function patchTestLoader(TestLoader) {
 
     testLoader._testModules = [];
     _super.loadModules.apply(testLoader, arguments);
+    testModules = testLoader._testModules;
 
     if (weighted) {
-      testLoader._testModules = weightedTestModules(testLoader._testModules);
+      testModules = weightedTestModules(testModules);
     }
 
-    testLoader._testModules = splitTestModules(testLoader._testModules, split, partitions);
+    testModules = splitTestModules(testModules, split, partitions);
 
-    testLoader._testModules.forEach((moduleName) => {
+    testModules.forEach((moduleName) => {
       _super.require.call(testLoader, moduleName);
       _super.unsee.call(testLoader, moduleName);
     });
