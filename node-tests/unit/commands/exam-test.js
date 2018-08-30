@@ -55,9 +55,21 @@ describe('ExamCommand', function() {
       });
     });
 
+    it('should set \'weighted\' on the query option with weighted flag', function() {
+      return command.run({ weighted: true }).then(function() {
+        assert.equal(called.testRunOptions.query, '_weighted');
+      });
+    });
+
     it('should set \'partition\' on the query option with one partition', function() {
       return command.run({ split: 2, partition: [2] }).then(function() {
         assert.equal(called.testRunOptions.query, '_split=2&_partition=2');
+      });
+    });
+
+    it('should set \'load-balance\' on the query option', function() {
+      return command.run({ 'loadBalance': 1 }).then(function() {
+        assert.equal(called.testRunOptions.query, '_load-balance=1');
       });
     });
 
@@ -107,7 +119,7 @@ describe('ExamCommand', function() {
 
     it('should set \'weighted\' on the query option', function() {
       return command.run({ split: 2, partition: [2], weighted: true }).then(function() {
-        assert.equal(called.testRunOptions.query, '_split=2&_partition=2&_weighted');
+        assert.equal(called.testRunOptions.query, '_weighted&_split=2&_partition=2');
       });
     });
   });
@@ -186,6 +198,86 @@ describe('ExamCommand', function() {
         'tests/index.html?hidepassed&derp=herp&_split=4&_partition=4',
         'tests/index.html?hidepassed&foo=bar&_split=4&_partition=3',
         'tests/index.html?hidepassed&foo=bar&_split=4&_partition=4'
+      ]);
+    });
+
+    it('should have a custom test page', function() {
+      var config = generateConfig({
+        query: 'foo=bar',
+        'test-page': 'tests.html'
+      });
+
+      assert.equal(config.testPage, 'tests.html?foo=bar');
+    });
+
+    it('should modify the config to have a test page with \'load-balance\' when no specified number of browser', function() {
+      var config = generateConfig({
+        'loadBalance': 1
+      });
+
+      assert.deepEqual(config.testPage, [
+        'tests/index.html?hidepassed&derp=herp&_load-balance&_browser=1'
+      ])
+    });
+
+    it('should modify the config to have a test page with \'load-balance\' with splitting when no specified number of browser', function() {
+      var config = generateConfig({
+        'loadBalance': 1,
+        split: 2,
+      });
+
+      assert.deepEqual(config.testPage, [
+        'tests/index.html?hidepassed&derp=herp&_load-balance&_split=2&_browser=1'
+      ])
+    });
+
+    it('should modify the config to have multiple test pages with test loading balanced, no specified partitions and no splitting ', function(){
+      var config = generateConfig({
+        'loadBalance': 2,
+      });
+
+      assert.deepEqual(config.testPage, [
+        'tests/index.html?hidepassed&derp=herp&_load-balance&_browser=1',
+        'tests/index.html?hidepassed&derp=herp&_load-balance&_browser=2'
+      ])
+    });
+
+    it('should modify the config to have multiple test pages with splitting when loading test load-balanced', function(){
+      var config = generateConfig({
+        'loadBalance': 2,
+        split: 2,
+      });
+
+      assert.deepEqual(config.testPage, [
+        'tests/index.html?hidepassed&derp=herp&_load-balance&_split=2&_browser=1',
+        'tests/index.html?hidepassed&derp=herp&_load-balance&_split=2&_browser=2'
+      ])
+    });
+
+    it('should modify the config to have multiple test pages with specified partitions when loading test balanced', function(){
+      var config = generateConfig({
+        'loadBalance': 2,
+        split: 3,
+        partition: [2, 3],
+      });
+
+      assert.deepEqual(config.testPage, [
+        'tests/index.html?hidepassed&derp=herp&_load-balance&_split=3&_partition=2&_partition=3&_browser=1',
+        'tests/index.html?hidepassed&derp=herp&_load-balance&_split=3&_partition=2&_partition=3&_browser=2'
+      ])
+    });
+
+    it('should modify the config to have multiple test pages for each test_page in the config file with partitions specified and test loading balanced', function() {
+      var config = generateConfig({
+        'loadBalance': 1,
+        split: 4,
+        partition: [3, 4],
+        configFile: 'testem.multiple-test-page.js'
+      });
+
+      assert.deepEqual(config.testPage, [
+        'tests/index.html?hidepassed&derp=herp&_load-balance&_split=4&_partition=3&_partition=4&_browser=1',
+        'tests/index.html?hidepassed&foo=bar&_load-balance&_split=4&_partition=3&_partition=4&_browser=1'
       ]);
     });
 

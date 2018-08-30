@@ -1,5 +1,7 @@
+/* globals Testem */
 import getUrlParams from './get-url-params';
 import splitTestModules from './split-test-modules';
+import weightedTestModules from './weight-test-modules';
 
 export default function patchTestLoader(TestLoader) {
   TestLoader._urlParams = getUrlParams();
@@ -20,6 +22,8 @@ export default function patchTestLoader(TestLoader) {
 
   TestLoader.prototype.loadModules = function _emberExamLoadModules() {
     const urlParams = TestLoader._urlParams;
+    const weighted = urlParams._weighted;
+    const loadBalance = urlParams._loadBalance;
     let partitions = urlParams._partition;
     let split = parseInt(urlParams._split, 10);
 
@@ -35,12 +39,21 @@ export default function patchTestLoader(TestLoader) {
 
     testLoader._testModules = [];
     _super.loadModules.apply(testLoader, arguments);
+    this.modules = testLoader._testModules;
 
-    const splitModules = splitTestModules(testLoader._testModules, split, partitions);
+    if (weighted) {
+      this.modules = weightedTestModules(this.modules);
+    }
 
-    splitModules.forEach((modulePath) => {
-      _super.require.call(testLoader, modulePath);
-      _super.unsee.call(testLoader, modulePath);
-    });
+    this.modules = splitTestModules(this.modules, split, partitions);
+
+    if (loadBalance) {
+      Testem.emit('set-modules-queue', this.modules);
+    } else {
+      this.modules.forEach((moduleName) => {
+        _super.require.call(testLoader, moduleName);
+        _super.unsee.call(testLoader, moduleName);
+      });
+    }
   };
 }
