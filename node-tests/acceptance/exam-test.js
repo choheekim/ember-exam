@@ -11,7 +11,7 @@ function getNumberOfTests(str) {
   return match && parseInt(match[1], 10);
 }
 
-var TOTAL_NUM_TESTS = 50;
+var TOTAL_NUM_TESTS = 55;
 
 describe('Acceptance | Exam Command', function() {
   this.timeout(300000);
@@ -124,6 +124,15 @@ describe('Acceptance | Exam Command', function() {
     it('runs tests with the passed in seeds', function(done) {
       exec('ember exam --random 1337 --path acceptance-dist', function(_, stdout) {
         assert.ok(contains(stdout, 'Randomizing tests with seed: 1337'), 'logged the seed value');
+        assert.equal(getNumberOfTests(stdout), TOTAL_NUM_TESTS, 'ran all of the tests in the suite');
+        done();
+      });
+    });
+  });
+
+  describe('Weighted', function() {
+    it('runs tests by order of test type', function(done) {
+      exec('ember exam --weighted --path acceptance-dist', function(_, stdout) {
         assert.equal(getNumberOfTests(stdout), TOTAL_NUM_TESTS, 'ran all of the tests in the suite');
         done();
       });
