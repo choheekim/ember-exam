@@ -58,7 +58,7 @@ describe('TestOptionsValidator', function() {
     });
 
     it('should throw an error if `partition` contains duplicate values', function() {
-      shouldSplitThrows({ split: 2, partition: [1, 2, 1] }, /You cannot specify the same partition twice./);
+      shouldSplitThrows({ split: 2, partition: [1, 2, 1] }, /You cannot specify the same value twice./);
     });
 
     it('should return true if using `split`', function() {
@@ -129,6 +129,24 @@ describe('TestOptionsValidator', function() {
 
     it('should return true', function() {
       shouldEqual('LoadBalance', { loadBalance: 3 }, true);
+    });
+  });
+
+  describe('shouldReplayExecution', function() {
+    it('should throw an error if `replay-execution` is being used without `replay-browser`', function() {
+      shouldThrow('ReplayExecution', { replayExecution: 'foo.json'}, /You must specifiy the `reply-browser` option in order to use `reply-execution` option./);
+    });
+
+    it('should throw an error if `replay-browser` contains a value less than 1', function() {
+      shouldThrow('ReplayExecution', { replayExecution: 'foo.json', replayBrowser: [1, 0]}, /You must specify reply-browser values greater than or equal to 1./);
+    });
+
+    it('should throw an error if `replay-browser` contains duplicate values', function() {
+      shouldThrow('ReplayExecution', { replayExecution: 'foo.json', replayBrowser: [1, 2, 1]}, /You cannot specify the same value twice./);
+    })
+
+    it('should return true', function() {
+      shouldEqual('ReplayExecution', { replayExecution: 'foo.json', replayBrowser: [1, 2] }, true);
     });
   });
 });
