@@ -134,11 +134,11 @@ describe('TestOptionsValidator', function() {
 
   describe('shouldReplayExecution', function() {
     it('should throw an error if `replay-execution` is being used without `replay-browser`', function() {
-      shouldThrow('ReplayExecution', { replayExecution: 'foo.json'}, /You must specifiy the `reply-browser` option in order to use `reply-execution` option./);
+      shouldThrow('ReplayExecution', { replayExecution: 'foo.json'}, /You must specify the `replay-browser` option in order to use `replay-execution` option./);
     });
 
     it('should throw an error if `replay-browser` contains a value less than 1', function() {
-      shouldThrow('ReplayExecution', { replayExecution: 'foo.json', replayBrowser: [1, 0]}, /You must specify reply-browser values greater than or equal to 1./);
+      shouldThrow('ReplayExecution', { replayExecution: 'foo.json', replayBrowser: [1, 0]}, /You must specify replay-browser values greater than or equal to 1./);
     });
 
     it('should throw an error if `replay-browser` contains duplicate values', function() {
