@@ -134,23 +134,23 @@ describe('TestOptionsValidator', function() {
 
   describe('shouldReplayExecution', function() {
     it('should throw an error if `replay-execution` is being used without `replay-browser`', function() {
-      shouldThrow('ReplayExecution', { replayExecution: 'foo.json'}, /You must specifiy the `reply-browser` option in order to use `reply-execution` option./);
+      shouldThrow('ReplayExecution', { replayExecution: 'test-execution-0000000.json'}, /You must specifiy the `reply-browser` option in order to use `reply-execution` option./);
     });
 
     it('should throw an error if `replay-browser` contains a value less than 1', function() {
-      shouldThrow('ReplayExecution', { replayExecution: 'foo.json', replayBrowser: [1, 0]}, /You must specify reply-browser values greater than or equal to 1./);
+      shouldThrow('ReplayExecution', { replayExecution: 'test-execution-0000000.json', replayBrowser: [1, 0]}, /You must specify reply-browser values greater than or equal to 1./);
     });
 
     it('should throw an error if `replay-browser` contains duplicate values', function() {
-      shouldThrow('ReplayExecution', { replayExecution: 'foo.json', replayBrowser: [1, 2, 1]}, /You cannot specify the same value twice./);
+      shouldThrow('ReplayExecution', { replayExecution: 'test-execution-0000000.json', replayBrowser: [1, 2, 1]}, /You cannot specify the same value twice./);
     })
 
     it('should throw an error if `replay-browser` contains duplicate values', function() {
-      shouldThrow('ReplayExecution', { replayExecution: 'foo.json', replayBrowser: [3, 1]}, /You must specify replayBrowser value smaller than a number of browsers in the specified json file./);
+      shouldThrow('ReplayExecution', { replayExecution: 'test-execution-0000000.json', replayBrowser: [3, 1]}, /You must specify replayBrowser value smaller than a number of browsers in the specified json file./);
     })
 
     it('should return true', function() {
-      shouldEqual('ReplayExecution', { replayExecution: 'foo.json', replayBrowser: [1, 2] }, true);
+      shouldEqual('ReplayExecution', { replayExecution: 'test-execution-0000000.json', replayBrowser: [1, 2] }, true);
     });
   });
 });
