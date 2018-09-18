@@ -131,7 +131,8 @@ describe('ExamCommand', function() {
       project.isEmberCLIProject = function() { return true; };
 
       var command = new ExamCommand({
-        project: project
+        project: project,
+        tasks: {}
       });
 
       command.validator = new TestOptionsValidator(options);
