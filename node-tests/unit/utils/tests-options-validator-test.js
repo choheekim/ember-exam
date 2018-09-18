@@ -145,6 +145,10 @@ describe('TestOptionsValidator', function() {
       shouldThrow('ReplayExecution', { replayExecution: 'foo.json', replayBrowser: [1, 2, 1]}, /You cannot specify the same value twice./);
     })
 
+    it('should throw an error if `replay-browser` contains duplicate values', function() {
+      shouldThrow('ReplayExecution', { replayExecution: 'foo.json', replayBrowser: [3, 1]}, /You must specify replayBrowser value smaller than a number of browsers in the specified json file./);
+    })
+
     it('should return true', function() {
       shouldEqual('ReplayExecution', { replayExecution: 'foo.json', replayBrowser: [1, 2] }, true);
     });
